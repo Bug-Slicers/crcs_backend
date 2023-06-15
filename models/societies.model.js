@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
+const bcrypt = require("bcrypt");
 
 const societySchema = new mongoose.Schema(
     {
@@ -67,6 +68,11 @@ const societySchema = new mongoose.Schema(
             required: [true, "Password is required field"],
             minLength: [8, "Password must be at least 8 characters"],
         },
+        is_approved: {
+            type: Boolean,
+            required: true,
+            default: false,
+        }
     },
     { timestamps: true }
 );

@@ -1,7 +1,7 @@
+const Application = require("../../models/application.model");
 const Society = require("../../models/societies.model");
 const { createTokens } = require("../../utilities/createToken");
 const { handleError } = require("../../utilities/handleError");
-
 
 const maxAge = 3 * 24 * 60 * 60;
 
@@ -12,10 +12,10 @@ module.exports.test = (req, res) => {
     })
 }
 
-module.exports.society_login = (req, res) => {
+module.exports.society_login = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const society = Society.login({
+        const society = await Society.login({
 
             email,
             password
@@ -29,26 +29,33 @@ module.exports.society_login = (req, res) => {
     }
 };
 
-module.exports.society_signup = (req, res) => {
-    const { society_name, address, pincode, state, district, society_type, designation, pan_number, email, phone_number, password } = req.body;
+module.exports.society_signup = async (req, res) => {
+    const { society_name, address, pincode, state, district, society_type, designation, pan_number, email, phone_number, password, is_approved } = req.body;
 
     try {
-        const society = Society.create({
+        const society = await Society.create({
             society_name,
             address,
             pincode,
             state,
             district,
-            society_name,
+            society_type,
             designation,
             pan_number,
             email,
             phone_number,
             password,
+            is_approved
         })
-        const token = createTokens(society._id);
+
+        const society_id = society._id;
+        const application = await Application.create({
+            society_id,
+            application_type: 'New Registration',
+        })
+        const token = createTokens(society_id);
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(201).json({ society });
+        res.status(201).json({ society, application });
     } catch (err) {
         const errors = handleError(err);
         console.log(err);
