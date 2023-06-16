@@ -65,3 +65,43 @@ module.exports.society_signup = async (req, res) => {
     }
 
 }
+
+module.exports.getRegisteredSocieties = async (req, res) => {
+
+    try {
+        const societies = await Society.find({ is_approved: true });
+
+        const modifiedSocieties = await Promise.all(
+            societies.map(async (society) => {
+                let modifiedSociety = society.toJSON();
+                const application_data = await Application.findOne(
+                    {
+                        $and: [
+                            { society_id: society._id },
+                            {
+                                $or: [
+                                    { application_type: "Re-Submission of New Registration" },
+                                    { application_type: "New Registration" }
+                                ]
+                            }
+                        ]
+                    }
+                )
+                const newModifedSociety = { ...modifiedSociety, certificate: `/download/certificate/${application_data.certificate}` }
+                return newModifedSociety
+            })
+        )
+
+        res.status(200).json({
+            msg: "All the registered societies",
+            success: true,
+            data: modifiedSocieties
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            msg: "Internal Server Error",
+            success: false
+        })
+    }
+}
