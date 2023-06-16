@@ -52,6 +52,8 @@ module.exports.society_signup = async (req, res) => {
         const application = await Application.create({
             society_id,
             application_type: 'New Registration',
+            application_title: 'Application for new Registration',
+            application_desc: 'This application is for creating new society for hardworkers'
         })
         const token = createTokens(society_id);
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
