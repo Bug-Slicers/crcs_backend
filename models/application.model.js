@@ -17,6 +17,14 @@ const applicationSchema = new mongoose.Schema({
         ],
         required: true,
     },
+    application_title: {
+        type: String,
+        required: true,
+    },
+    application_desc: {
+        type: String,
+        required: true
+    },
     date_of_application: {
         type: Date,
         default: Date.now,
