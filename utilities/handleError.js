@@ -1,5 +1,5 @@
 module.exports.handleError = (err) => {
-    let errors = { email: "", password: "" };
+    let errors = {};
 
     // incorrect email
     if (err.message === "Invalid Email.") {
@@ -13,7 +13,14 @@ module.exports.handleError = (err) => {
 
     // duplicate error code
     if (err.code === 11000) {
-        errors.email = "That email is already registered";
+        if (err.keyPattern.email === 1) {
+            errors.email = "That email is already registered";
+        }
+        else if (err.keyPattern.pan_number === 1) {
+            errors.pan_number = 'That Pan is Already registered';
+        } else if (err.keyPattern.phone_number === 1) {
+            errors.phone_number = 'That phone is already registerd'
+        }
         return errors;
     }
 
@@ -23,5 +30,6 @@ module.exports.handleError = (err) => {
             errors[properties.path] = properties.message;
         });
     }
+
     return errors;
 };

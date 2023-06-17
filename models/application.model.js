@@ -30,6 +30,10 @@ const applicationSchema = new mongoose.Schema({
         default: Date.now,
         required: true,
     },
+    supporting_documents: {
+        type: [String],
+        default: null
+    },
     notice: {
         type: String,
         default: null,

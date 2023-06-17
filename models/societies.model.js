@@ -26,7 +26,36 @@ const societySchema = new mongoose.Schema(
         },
         society_type: {
             type: String,
+            enum: [
+                "Agro",
+                "Construction",
+                "Consumer",
+                "Cooperative Bank",
+                "Credit",
+                "Dairy",
+                "Export",
+                "Federation",
+                "Fisheries",
+                "Industrial/Textile",
+                "Labour",
+                "Marketing",
+                "Multi Purpose",
+                "National Federation",
+                "Organic",
+                "Others",
+                "Seed",
+                "Technical",
+                "Tourism",
+                "Transport",
+                "Welfare",
+                "Health/Hospital",
+                "Housing"
+            ],
             required: [true, "Please select a valid Society type"]
+        },
+        name_of_officer: {
+            type: String,
+            required: [true, 'name of officer is a required field']
         },
         designation: {
             type: String,
@@ -61,7 +90,8 @@ const societySchema = new mongoose.Schema(
                     return phone_regex.test(phone_number);
                 },
                 message: "Please Enter a Valid Phone Number",
-            }
+            },
+            unique: true,
         },
         password: {
             type: String,
