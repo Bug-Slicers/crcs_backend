@@ -8,60 +8,6 @@ module.exports.test = (req, res) => {
     })
 }
 
-module.exports.createApplication = async (req, res) => {
-    const { society_id, application_type, application_desc, application_title } = req.body;
-
-    try {
-        const application = await Application.create({
-            society_id,
-            application_type,
-            application_title,
-            application_desc
-        })
-
-        res.status(200).json({
-            msg: `application created for ${application_type} and waiting for approval`,
-            success: true,
-        })
-
-    } catch (err) {
-        console.error("Error while creating application: ", err);
-        res.status(500).json({
-            msg: "Internal Server Error",
-            success: false,
-        })
-    }
-}
-
-module.exports.getApplicationForApproval = async (req, res) => {
-
-    try {
-        const applications = await Application.find({ is_approved: false });
-
-        const modifiedApplications = applications.map(app => {
-            const modifiedApp = app.toJSON();
-            modifiedApp.notice = `/download/notices/${app.notice}`;
-            modifiedApp.order = `/download/orders/${app.order}`;
-            modifiedApp.certificate = `/download/certificates/${app.certificate}`;
-
-            return modifiedApp
-        })
-
-        res.status(200).json({
-            msg: "Applications that are not approved as of now",
-            success: true,
-            data: modifiedApplications
-        })
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            msg: "Internal server error",
-            success: false
-        })
-    }
-}
-
 module.exports.getApprovedApplication = async (req, res) => {
     try {
         const applications = await Application.find({ is_approved: true })

@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
         const fileName = `${file.fieldname}_${applicationId}.pdf`;
         cb(null, fileName);
     },
-
     overwrite: true
 });
 
@@ -35,6 +34,7 @@ const uploadFiles = (req, res, next) => {
         { name: 'certificate', maxCount: 1 },
         { name: 'order', maxCount: 1 },
         { name: 'notice', maxCount: 1 },
+        { name: 'supporting_documents', maxCount: 1 }
     ])(req, res, (err) => {
         if (err) {
             console.error('Error uploading files:', err);
