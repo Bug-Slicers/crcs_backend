@@ -86,3 +86,21 @@ module.exports.downloadFile = (req, res) => {
     });
 }
 
+module.exports.getApplicationById = async (req, res) => {
+    try {
+        const app_id = req.params.id;
+        const data = await Application.findOne({ _id: app_id });
+        res.status(200).json({
+            msg: "Application data sent successfully",
+            success: true,
+            data: data
+        })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            success: false,
+            msg: "Internal Server Error",
+        })
+    }
+}
+

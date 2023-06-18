@@ -18,11 +18,11 @@ module.exports.society_login = async (req, res) => {
         const society = await Society.login(email, password)
         const token = createTokens(society._id);
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(201).json({ society });
+        res.status(201).json({ success: true, society });
     } catch (err) {
         console.log(err);
         const errors = handleError(err);
-        res.status(503).json({ errors });
+        res.status(503).json({ success: false, errors });
     }
 };
 
@@ -46,11 +46,11 @@ module.exports.society_signup = async (req, res) => {
         const society_id = society._id;
         const token = createTokens(society_id);
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(201).json({ society });
+        res.status(201).json({ success: true, society });
     } catch (err) {
         const errors = handleError(err);
         console.log(err);
-        res.status(503).json({ errors });
+        res.status(503).json({ success: false, errors });
     }
 }
 
