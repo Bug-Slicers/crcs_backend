@@ -2,6 +2,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+
+
 // Set storage options for Multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -24,17 +26,15 @@ const storage = multer.diskStorage({
     overwrite: true
 });
 
+
+
 const upload = multer({ storage });
-
-
-
 // Middleware to handle file uploads
 const uploadFiles = (req, res, next) => {
     upload.fields([
         { name: 'certificate', maxCount: 1 },
         { name: 'order', maxCount: 1 },
         { name: 'notice', maxCount: 1 },
-        { name: 'supporting_documents', maxCount: 1 }
     ])(req, res, (err) => {
         if (err) {
             console.error('Error uploading files:', err);
