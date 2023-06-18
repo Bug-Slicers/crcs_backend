@@ -68,7 +68,15 @@ module.exports.downloadFile = (req, res) => {
     const filename = req.params.filename;
     const foldername = req.params.folder;
 
-    const filePath = path.join(__dirname, `../../upload/${foldername}`, filename);
+    let download_doc = '';
+
+    if (foldername !== "certificates" && foldername !== "notices" && foldername !== "orders") {
+        download_doc = `../../upload/application_docs/${foldername}`
+    }
+    else {
+        download_doc = `../../upload/${foldername}`
+    }
+    const filePath = path.join(__dirname, download_doc, filename);
 
     res.download(filePath, (error) => {
         if (error) {
