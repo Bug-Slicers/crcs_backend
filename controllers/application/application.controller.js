@@ -12,19 +12,10 @@ module.exports.getApprovedApplication = async (req, res) => {
     try {
         const applications = await Application.find({ is_approved: true })
 
-        const modifiedApplications = applications.map(app => {
-            const modifiedApp = app.toJSON();
-            modifiedApp.notice = `/download/notices/${app.notice}`;
-            modifiedApp.order = `/download/orders/${app.order}`;
-            modifiedApp.certificate = `/download/certificates/${app.certificate}`;
-
-            return modifiedApp
-        })
-
         res.status(200).json({
             msg: "Applications that have been approved",
             success: true,
-            data: modifiedApplications
+            data: applications
         })
 
     } catch (err) {
@@ -39,19 +30,11 @@ module.exports.getApprovedApplication = async (req, res) => {
 module.exports.getAllApplication = async (req, res) => {
     try {
         const applications = await Application.find();
-        const modifiedApplications = applications.map(app => {
-            const modifiedApp = app.toJSON();
-            modifiedApp.notice = `/download/notices/${app.notice}`;
-            modifiedApp.order = `/download/orders/${app.order}`;
-            modifiedApp.certificate = `/download/certificates/${app.certificate}`;
-
-            return modifiedApp
-        })
 
         res.status(200).json({
             msg: "All The Received Applications",
             success: true,
-            data: modifiedApplications
+            data: applications
         })
 
     } catch (error) {
