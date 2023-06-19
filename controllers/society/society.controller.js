@@ -80,10 +80,9 @@ module.exports.society_signup = async (req, res) => {
             sameSite: "none", secure: "false"
         });
         let sendOptions = {
-            name: data.name_of_officer,
-            email: data.email,
-            society_name: data.society_name,
-            password: originalPassword,
+            name: society.name_of_officer,
+            email: society.email,
+            society_name: society.society_name,
         };
         sendCreateSocietyEmail(sendOptions);
         res.status(201).json({ success: true, society });
@@ -116,7 +115,7 @@ module.exports.getRegisteredSocieties = async (req, res) => {
                     }
                 )
                 console.log(application_data)
-                const newModifedSociety = { ...modifiedSociety, certificate: `/download/certificate/${application_data.certificate}` }
+                const newModifedSociety = { ...modifiedSociety, certificate: application_data.certificate }
                 return newModifedSociety
             })
         )
@@ -151,3 +150,4 @@ module.exports.getProfile = async (req, res) => {
         })
     }
 }
+

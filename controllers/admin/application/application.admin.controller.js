@@ -37,7 +37,7 @@ module.exports.approveApplication = async (req, res) => {
         console.error("Error during approval : ", err);
         res.status(500).json({
             msg: "Internal Server Error",
-            success: true,
+            success: false,
         })
     }
 }
@@ -86,20 +86,10 @@ module.exports.getApplicationForApproval = async (req, res) => {
 
     try {
         const applications = await Application.find({ is_approved: false }).populate('society_id');
-
-        const modifiedApplications = applications.map(app => {
-            const modifiedApp = app.toJSON();
-            modifiedApp.notice = `/download/notices/${app.notice}`;
-            modifiedApp.order = `/download/orders/${app.order}`;
-            modifiedApp.certificate = `/download/certificates/${app.certificate}`;
-
-            return modifiedApp
-        })
-
         res.status(200).json({
             msg: "Applications that are not approved as of now",
             success: true,
-            data: modifiedApplications
+            data: applications
         })
 
     } catch (err) {

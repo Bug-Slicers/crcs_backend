@@ -20,7 +20,7 @@ module.exports.createApplication = async (req, res) => {
                 $set: {
                     supporting_documents: files.map(file => {
                         const originalName = file.originalname.replace(/\s+/g, '_');
-                        return `download/${newApplication._id}/${originalName}`
+                        return `/download/${newApplication._id}/${originalName}`
                     })
                 }
             }
@@ -64,7 +64,10 @@ module.exports.updateApplication = async (req, res) => {
                     application_desc,
                     application_title,
                     application_type,
-                    supporting_documents: [...app_data.supporting_documents, ...files.map(file => { return file.originalname })]
+                    supporting_documents: [...app_data.supporting_documents, ...files.map(file => {
+                        const originalName = file.originalname.replace(/\s+/g, '_');
+                        return `/download/${app_id}/${originalName}`
+                    })]
                 }
             }
         )
@@ -85,3 +88,19 @@ module.exports.updateApplication = async (req, res) => {
 
 }
 
+module.exports.getApplicationBySocietyId = async (req, res) => {
+    try {
+        const id = req.Society._id;
+        const data = await Application.find({ society_id: id })
+
+        res.status(200).json({
+            success: true,
+            data: data
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            msg: "Internal Server Error"
+        })
+    }
+}

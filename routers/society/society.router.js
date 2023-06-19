@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const { test, society_signup, getRegisteredSocieties, society_login, getProfile } = require("../../controllers/society/society.controller");
-const { createApplication, updateApplication } = require("../../controllers/society/application/application.society.controller");
+const { createApplication, updateApplication, getApplicationBySocietyId } = require("../../controllers/society/application/application.society.controller");
 const { requireSocietyAuth } = require("../../middlewares/societies.middleware");
 const { getApplicationById } = require("../../controllers/application/application.controller");
 const uploadSupportingDocuments = require("../../middlewares/upload_middlewares/uploadSupporting.middleware");
@@ -12,6 +12,7 @@ societyRouter.get("/test", test)
 societyRouter.get("/registered-societies", getRegisteredSocieties);
 societyRouter.get("/get-application/:id", requireSocietyAuth, getApplicationById)
 societyRouter.get("/get-profile", requireSocietyAuth, getProfile)
+societyRouter.get("/get-your-applications", getApplicationBySocietyId)
 
 societyRouter.post("/create-application", requireSocietyAuth, uploadSupportingDocuments, createApplication);
 societyRouter.post("/update-application/:id", updateSupportingDocs, updateApplication)
