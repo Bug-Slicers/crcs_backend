@@ -16,7 +16,10 @@ module.exports.admin_login = async (req, res) => {
     try {
         const admin = await Admin.login(email, password);
         const token = createTokens(admin._id);
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.cookie("jwt", token, {
+            httpOnly: true, maxAge: maxAge * 1000,
+            sameSite: "none", Secure: "true"
+        });
         res.status(200).json({ success: true, admin });
     } catch (err) {
         console.log(err);
@@ -34,7 +37,10 @@ module.exports.admin_signup = async (req, res) => {
             password,
         });
         const token = createTokens(admin._id);
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.cookie("jwt", token, {
+            httpOnly: true, maxAge: maxAge * 1000,
+            sameSite: "none", secure: "false"
+        });
         res.status(201).json({ success: true, admin });
     } catch (err) {
         const errors = handleError(err);

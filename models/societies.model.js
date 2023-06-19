@@ -8,6 +8,10 @@ const societySchema = new mongoose.Schema(
             type: String,
             required: [true, "Please Enter a Name of Society"]
         },
+        society_logo: {
+            type: String,
+            required: [true, "Society Logo is a required Field"]
+        },
         address: {
             type: String,
             required: [true, "Please Enter valid address of the society"]

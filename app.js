@@ -11,7 +11,7 @@ const app = express();
 const dbURI = process.env.DATABASE;
 const port = process.env.PORT || 5000;
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: ["http://localhost:5173", "http://192.168.1.6:5173"], credentials: true, allowedHeaders: ["Content-Type", "Set-Cookie"] }));
 app.use(express.json());
 app.use(cookieParser());
 mongoose

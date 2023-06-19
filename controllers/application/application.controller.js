@@ -64,28 +64,6 @@ module.exports.getAllApplication = async (req, res) => {
     }
 }
 
-module.exports.downloadFile = (req, res) => {
-    const filename = req.params.filename;
-    const foldername = req.params.folder;
-
-    let download_doc = '';
-
-    if (foldername !== "certificates" && foldername !== "notices" && foldername !== "orders") {
-        download_doc = `../../upload/application_docs/${foldername}`
-    }
-    else {
-        download_doc = `../../upload/${foldername}`
-    }
-    const filePath = path.join(__dirname, download_doc, filename);
-
-    res.download(filePath, (error) => {
-        if (error) {
-            console.error('Error downloading file:', error);
-            res.status(500).json({ message: 'Error downloading file' });
-        }
-    });
-}
-
 module.exports.getApplicationById = async (req, res) => {
     try {
         const app_id = req.params.id;
