@@ -1,7 +1,9 @@
 const Application = require("../../models/application.model");
 const Society = require("../../models/societies.model");
+const { sendCreateSocietyEmail } = require("../../utilities/Email/sendCreateSocietyEmail");
 const { createTokens } = require("../../utilities/createToken");
 const { handleError } = require("../../utilities/handleError");
+const fs = require("fs");
 
 const maxAge = 3 * 24 * 60 * 60;
 
@@ -17,7 +19,10 @@ module.exports.society_login = async (req, res) => {
     try {
         const society = await Society.login(email, password)
         const token = createTokens(society._id);
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.cookie("jwt", token, {
+            httpOnly: true, maxAge: maxAge * 1000,
+            sameSite: "none", secure: "false"
+        });
         res.status(201).json({ success: true, society });
     } catch (err) {
         console.log(err);
@@ -29,8 +34,12 @@ module.exports.society_login = async (req, res) => {
 module.exports.society_signup = async (req, res) => {
     const { society_name, address, name_of_officer, pincode, state, district, society_type, designation, pan_number, email, phone_number, password } = req.body;
     try {
+        const logo = req.files;
+
+        const society_logo = "temp";
         const society = await Society.create({
             society_name,
+            society_logo,
             address,
             pincode,
             state,
@@ -43,9 +52,40 @@ module.exports.society_signup = async (req, res) => {
             phone_number,
             password,
         })
+
+
         const society_id = society._id;
+        const originalName = logo.society_logo[0].originalname.replace(/\s+/g, '_');
+        const data = await Society.updateOne(
+            { _id: society_id },
+            {
+                $set: {
+                    society_logo: `/download/society_logos/${society_id}_${originalName}`
+                }
+            }
+        )
+
+        fs.rename(`upload/society_logos/temp.jpeg`, `upload/society_logos/${society_id}_${originalName}`, (err) => {
+            if (err) {
+                console.error('Error renaming folder:', err);
+            } else {
+                console.log('Folder renamed successfully.');
+            }
+        })
+
+
         const token = createTokens(society_id);
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.cookie("jwt", token, {
+            httpOnly: true, maxAge: maxAge * 1000,
+            sameSite: "none", secure: "false"
+        });
+        let sendOptions = {
+            name: data.name_of_officer,
+            email: data.email,
+            society_name: data.society_name,
+            password: originalPassword,
+        };
+        sendCreateSocietyEmail(sendOptions);
         res.status(201).json({ success: true, society });
     } catch (err) {
         const errors = handleError(err);
@@ -75,6 +115,7 @@ module.exports.getRegisteredSocieties = async (req, res) => {
                         ]
                     }
                 )
+                console.log(application_data)
                 const newModifedSociety = { ...modifiedSociety, certificate: `/download/certificate/${application_data.certificate}` }
                 return newModifedSociety
             })
@@ -94,3 +135,19 @@ module.exports.getRegisteredSocieties = async (req, res) => {
     }
 }
 
+module.exports.getProfile = async (req, res) => {
+    try {
+        const data = req.Society;
+        res.status(200).json({
+            succuss: true,
+            msg: "profile of Society sent successfully",
+            data: data
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            msg: "Internal server error"
+        })
+    }
+}

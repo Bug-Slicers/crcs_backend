@@ -23,7 +23,7 @@ module.exports.approveApplication = async (req, res) => {
             { _id: app_id },
             {
                 $set: {
-                    certificate: `certificate_${app_id}.pdf`,
+                    certificate: `/download/certificates/certificate_${app_id}.pdf`,
                     is_approved: true,
                 }
             }
@@ -50,10 +50,10 @@ module.exports.declineApplication = async (req, res) => {
         let noticeName = null;
 
         if (req.files.order) {
-            orderName = `order_${app_id}.pdf`;
+            orderName = `/download/orders/order_${app_id}.pdf`;
         }
         if (req.files.notice) {
-            noticeName = `notice_${app_id}.pdf`;
+            noticeName = `/download/notices/notice_${app_id}.pdf`;
         }
 
         const application_data = await Application.findOne({ _id: app_id });
@@ -85,7 +85,7 @@ module.exports.declineApplication = async (req, res) => {
 module.exports.getApplicationForApproval = async (req, res) => {
 
     try {
-        const applications = await Application.find({ is_approved: false });
+        const applications = await Application.find({ is_approved: false }).populate('society_id');
 
         const modifiedApplications = applications.map(app => {
             const modifiedApp = app.toJSON();

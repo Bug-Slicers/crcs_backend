@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
+const Society = require('./societies.model');
 
 const applicationSchema = new mongoose.Schema({
     society_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Society',
         required: true,
     },
     application_type: {
@@ -13,7 +15,7 @@ const applicationSchema = new mongoose.Schema({
             'Deemed',
             'Amendments',
             'Conversion',
-            'Reconsideration of new amendments'
+            'Reconsideration of New Amendments'
         ],
         required: true,
     },

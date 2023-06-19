@@ -14,12 +14,14 @@ module.exports.createApplication = async (req, res) => {
             application_desc,
         })
 
-
         const updateApplication = await Application.updateOne(
             { _id: newApplication._id },
             {
                 $set: {
-                    supporting_documents: files.map(file => { return file.originalname })
+                    supporting_documents: files.map(file => {
+                        const originalName = file.originalname.replace(/\s+/g, '_');
+                        return `download/${newApplication._id}/${originalName}`
+                    })
                 }
             }
         )
@@ -44,40 +46,6 @@ module.exports.createApplication = async (req, res) => {
             success: false,
         })
     }
-}
-
-
-module.exports.deleteFile = async (req, res) => {
-    try {
-        const applicationId = req.params.id;
-        const fileName = req.params.filename;
-        const filePath = path.join(__dirname, `../../../upload/application_docs/${applicationId}/${fileName}`);
-        fs.unlink(filePath, async (err) => {
-            if (err) {
-                console.error('Error deleting file:', err);
-                return res.status(500).json({ success: false, message: 'internal Server Error' });
-            }
-            const data = await Application.findOne({ _id: applicationId });
-            // const support = 
-            const application_data = await Application.updateOne(
-                { _id: applicationId },
-                {
-                    $set: {
-                        supporting_documents: data.supporting_documents.filter(item => item !== fileName)
-                    }
-                }
-            )
-
-            res.status(200).json({ success: true, message: 'File deleted successfully' });
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            success: false,
-            msg: "Internal Server Error"
-        })
-    }
-
 }
 
 module.exports.updateApplication = async (req, res) => {
