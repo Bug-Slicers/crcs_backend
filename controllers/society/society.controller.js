@@ -1,6 +1,6 @@
 const Application = require("../../models/application.model");
 const Society = require("../../models/societies.model");
-const { sendCreateSocietyEmail } = require("../../utilities/Email/sendCreateSocietyEmail");
+const { sendCreateSocietyEmail } = require("../../utilities/email/sendEmails");
 const { createTokens } = require("../../utilities/createToken");
 const { handleError } = require("../../utilities/handleError");
 const fs = require("fs");
@@ -20,8 +20,7 @@ module.exports.society_login = async (req, res) => {
         const society = await Society.login(email, password)
         const token = createTokens(society._id);
         res.cookie("jwt", token, {
-            httpOnly: true, maxAge: maxAge * 1000,
-            sameSite: "none", secure: "false"
+            httpOnly: true, maxAge: maxAge * 1000
         });
         res.status(201).json({ success: true, society });
     } catch (err) {

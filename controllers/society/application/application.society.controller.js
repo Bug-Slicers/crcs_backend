@@ -56,26 +56,33 @@ module.exports.updateApplication = async (req, res) => {
         const { application_type, application_title, application_desc } = req.body;
 
         const app_data = await Application.findOne({ _id: app_id });
-
-        const data = await Application.updateOne(
-            { _id: app_id },
-            {
-                $set: {
-                    application_desc,
-                    application_title,
-                    application_type,
-                    supporting_documents: [...app_data.supporting_documents, ...files.map(file => {
-                        const originalName = file.originalname.replace(/\s+/g, '_');
-                        return `/download/${app_id}/${originalName}`
-                    })]
+        if (!app_data.is_approved) {
+            const data = await Application.updateOne(
+                { _id: app_id },
+                {
+                    $set: {
+                        application_desc,
+                        application_title,
+                        application_type,
+                        supporting_documents: [...app_data.supporting_documents, ...files.map(file => {
+                            const originalName = file.originalname.replace(/\s+/g, '_');
+                            return `/download/${app_id}/${originalName}`
+                        })]
+                    }
                 }
-            }
-        )
+            )
 
-        res.status(200).json({
-            msg: "Application Updated Successfully",
-            success: true,
-        })
+            res.status(200).json({
+                msg: "Application Updated Successfully",
+                success: true,
+            })
+        } else {
+            res.status(400).json({
+                success: false,
+                msg: "Cannot update application , it is already approved."
+            })
+        }
+
     } catch (err) {
         console.error(err);
         res.status(500).json({
