@@ -54,7 +54,7 @@ const applicationSchema = new mongoose.Schema({
     }
 
     // Other application schema fields...
-});
+}, { timestamps: true });
 
 const Application = mongoose.model('Application', applicationSchema);
 
