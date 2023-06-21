@@ -51,6 +51,10 @@ const applicationSchema = new mongoose.Schema({
     is_approved: {
         type: Boolean,
         default: false,
+    },
+    date_of_approval: {
+        type: Date,
+        default: null
     }
 
     // Other application schema fields...
