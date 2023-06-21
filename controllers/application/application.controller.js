@@ -29,7 +29,7 @@ module.exports.getApprovedApplication = async (req, res) => {
 
 module.exports.getAllApplication = async (req, res) => {
     try {
-        const applications = await Application.find();
+        const applications = await Application.find().populate("society_id");
 
         res.status(200).json({
             msg: "All The Received Applications",
