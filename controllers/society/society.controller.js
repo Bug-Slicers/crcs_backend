@@ -116,12 +116,11 @@ module.exports.getRegisteredSocieties = async (req, res) => {
                         ]
                     }
                 )
-                if (application_data == null) {
-
+                if (application_data != null) {
+                    const newModifedSociety = { ...modifiedSociety, certificate: application_data.certificate }
+                    return newModifedSociety
                 }
-                const newModifedSociety = { ...modifiedSociety, certificate: application_data.certificate }
-                console.log(newModifedSociety)
-                return newModifedSociety
+
             })
         )
 
