@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 const bcrypt = require("bcrypt");
+const { createSalt } = require("../utilities/createSalt");
 
 const societySchema = new mongoose.Schema(
     {
@@ -114,21 +115,28 @@ const societySchema = new mongoose.Schema(
         otp_generation_time: {
             type: Date,
             default: null
+        },
+        salt: {
+            type: String,
+            default: null
         }
     },
     { timestamps: true }
 );
 
 societySchema.pre("save", async function (next) {
-    const salt = await bcrypt.genSalt();
+    const salt = await createSalt();
     this.password = await bcrypt.hash(this.password, salt);
+    this.salt = salt;
     next();
 });
 
 societySchema.statics.login = async function (email, password) {
     const society = await this.findOne({ email });
+    console.log(society.password)
     if (society) {
         const auth = await bcrypt.compare(password, society.password);
+
         if (auth) {
             return society;
         }

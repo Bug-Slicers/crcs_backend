@@ -116,11 +116,16 @@ module.exports.getRegisteredSocieties = async (req, res) => {
                         ]
                     }
                 )
-                console.log(application_data)
+                if (application_data == null) {
+
+                }
                 const newModifedSociety = { ...modifiedSociety, certificate: application_data.certificate }
+                console.log(newModifedSociety)
                 return newModifedSociety
             })
         )
+
+        console.log(modifiedSocieties)
 
         res.status(200).json({
             msg: "All the registered societies",
@@ -128,7 +133,7 @@ module.exports.getRegisteredSocieties = async (req, res) => {
             data: modifiedSocieties
         })
     } catch (err) {
-        console.error(err);
+        console.error("haha", err);
         res.status(500).json({
             msg: "Internal Server Error",
             success: false
@@ -156,6 +161,7 @@ module.exports.getProfile = async (req, res) => {
 module.exports.generateOtp = async (req, res) => {
     try {
         const society = req.Society;
+        console.log(society)
         const otp = otpGenerator.generate(6, {
             digits: true,
             lowerCaseAlphabets: true
@@ -234,20 +240,22 @@ module.exports.checkOtp = async (req, res) => {
 module.exports.resetPassword = async (req, res) => {
     const { token, newPassword } = req.body;
     const society = req.Society;
-
+    console.log(society)
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         console.log(decoded)
         if (decoded.otp == society.otp) {
-            const salt = await bcrypt.genSalt();
-            const hashedPassword = await bcrypt.hash(newPassword, salt);
-            const society_data = await Society.findByIdAndUpdate(society._id, { password: hashedPassword });
-
-            society_data.otp = null;
-            society_data.otp_generation_time = null;
-
-            await society_data.save();
-
+            const hashedPassword = await bcrypt.hash(newPassword, society.salt);
+            const society_data = await Society.updateOne(
+                { _id: society._id },
+                {
+                    $set: {
+                        otp: null,
+                        otp_generation_time: null,
+                        password: hashedPassword
+                    }
+                }
+            )
             return res.status(200).json({ success: true, message: 'Password reset successful' });
         } else {
             return res.status(400).json({ success: false, message: 'Invalid OTP' });
