@@ -106,6 +106,14 @@ const societySchema = new mongoose.Schema(
             type: Boolean,
             required: true,
             default: false,
+        },
+        otp: {
+            type: String,
+            default: null,
+        },
+        otp_generation_time: {
+            type: Date,
+            default: null
         }
     },
     { timestamps: true }
