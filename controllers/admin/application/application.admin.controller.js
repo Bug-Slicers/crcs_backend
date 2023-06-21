@@ -16,6 +16,7 @@ module.exports.approveApplication = async (req, res) => {
                     {
                         $set: {
                             is_approved: true,
+                            date_of_approval: new Date()
                         }
                     }
                 );
