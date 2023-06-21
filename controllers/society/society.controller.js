@@ -1,7 +1,10 @@
+const otpGenerator = require("otp-generator")
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
 const Application = require("../../models/application.model");
 const Society = require("../../models/societies.model");
-const { sendCreateSocietyEmail } = require("../../utilities/email/sendEmails");
-const { createTokens } = require("../../utilities/createToken");
+const { sendCreateSocietyEmail, sendResetPasswordEmail } = require("../../utilities/email/sendEmails");
+const { createTokens, createOtpToken } = require("../../utilities/createToken");
 const { handleError } = require("../../utilities/handleError");
 const fs = require("fs");
 
@@ -150,3 +153,107 @@ module.exports.getProfile = async (req, res) => {
     }
 }
 
+module.exports.generateOtp = async (req, res) => {
+    try {
+        const society = req.Society;
+        const otp = otpGenerator.generate(6, {
+            digits: true,
+            lowerCaseAlphabets: true
+        })
+        const society_data = await Society.updateOne(
+            { _id: society._id },
+            {
+                $set: {
+                    otp: otp,
+                    otp_generation_time: new Date()
+                }
+            }
+        )
+
+        const emailOptions = {
+            email: society.email,
+            otp: otp,
+            name: society.name_of_officer
+        }
+        sendResetPasswordEmail(emailOptions)
+        res.status(200).json({
+            success: true,
+            msg: "Otp generated successfully and mailed"
+        })
+    } catch (err) {
+        console.error("Error while generating Otp")
+        res.status(503).json({
+            success: false,
+            msg: "Internal Server Error"
+        })
+    }
+}
+
+module.exports.checkOtp = async (req, res) => {
+
+    try {
+        const { otp } = req.body;
+        const society = req.Society;
+        const society_data = await Society.findOne({ _id: society.id })
+
+        const currentTime = new Date();
+        const otp_generation = new Date(society.otp_generation_time.getTime() + 5 * 60 * 1000)
+
+        console.log(currentTime)
+        console.log(otp_generation)
+
+        if (otp === society_data.otp) {
+            if (currentTime <= otp_generation) {
+                const otpToken = createOtpToken(otp);
+                res.status(200).json({
+                    success: true,
+                    msg: "Otp verified successfully",
+                    token: otpToken,
+                })
+            } else {
+                res.status(422).json({
+                    success: false,
+                    msg: "Otp has expired and not valid. pls re send email for new otp"
+                })
+            }
+        } else {
+            res.status(422).json({
+                success: false,
+                msg: "otp is not correct."
+            })
+        }
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({
+            success: false,
+            msg: "Internal server error"
+        })
+    }
+}
+
+module.exports.resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+    const society = req.Society;
+
+    try {
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        console.log(decoded)
+        if (decoded.otp == society.otp) {
+            const salt = await bcrypt.genSalt();
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+            const society_data = await Society.findByIdAndUpdate(society._id, { password: hashedPassword });
+
+            society_data.otp = null;
+            society_data.otp_generation_time = null;
+
+            await society_data.save();
+
+            return res.status(200).json({ success: true, message: 'Password reset successful' });
+        } else {
+            return res.status(400).json({ success: false, message: 'Invalid OTP' });
+        }
+    } catch (err) {
+        console.error(err)
+        return res.status(400).json({ success: false, message: 'Invalid token' });
+    }
+}

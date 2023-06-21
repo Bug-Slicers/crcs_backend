@@ -5,3 +5,10 @@ module.exports.createTokens = (id) => {
         expiresIn: maxAge,
     });
 };
+
+module.exports.createOtpToken = (otp) => {
+    const maxAge = 1 * 60 * 60;
+    return jwt.sign({ otp }, process.env.SECRET_KEY, {
+        expiresIn: maxAge,
+    })
+}

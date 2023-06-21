@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const Handlebars = require("handlebars");
-const { emailTemplate, approveEmailTemplate, declineEmailTemplate } = require("./emailTemplates/emailTemplates");
+const { emailTemplate, approveEmailTemplate, declineEmailTemplate, resetPasswordEmailTemplate } = require("./emailTemplates/emailTemplates");
 const transponder = nodemailer.createTransport({
     pool: true,
     host: "smtp.gmail.com",
@@ -65,6 +65,26 @@ module.exports.sendDeclineApplicationEmail = async (data) => {
         from: process.env.EMAIL,
         to: data.email,
         subject: "Your Application has been declined",
+        html: result,
+    };
+
+    transponder.sendMail(mailOptions, function (err, data) {
+        if (err) {
+            console.log("EMAIL IS NOT SENT", err);
+        } else {
+            console.log("EMAIL IS SENT SUCCESSFULLY.");
+        }
+    });
+};
+
+module.exports.sendResetPasswordEmail = async (data) => {
+    let template = Handlebars.compile(resetPasswordEmailTemplate);
+
+    let result = template(data);
+    let mailOptions = {
+        from: process.env.EMAIL,
+        to: data.email,
+        subject: "Otp to reset your password",
         html: result,
     };
 
