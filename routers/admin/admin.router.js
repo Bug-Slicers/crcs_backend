@@ -7,7 +7,7 @@ const { requireAdminAuth } = require("../../middlewares/admin.middleware");
 const adminRouter = Router();
 adminRouter.get("/test", test)
 adminRouter.get("/get-unapproved-applications", getApplicationForApproval);
-adminRouter.get("/get-applicaiton/:id", requireAdminAuth, getApplicationById)
+adminRouter.get("/get-application/:id", requireAdminAuth, getApplicationById)
 
 adminRouter.post("/signin", requireAdminAuth, admin_signup)
 adminRouter.post("/login", admin_login)
