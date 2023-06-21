@@ -10,7 +10,7 @@ module.exports.test = (req, res) => {
 
 module.exports.getApprovedApplication = async (req, res) => {
     try {
-        const applications = await Application.find({ is_approved: true })
+        const applications = await Application.find({ is_approved: true }).populate("society_id")
 
         res.status(200).json({
             msg: "Applications that have been approved",

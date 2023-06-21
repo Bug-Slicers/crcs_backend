@@ -8,6 +8,4 @@ applicationRouter.get("/get-approved-applicatations", getApprovedApplication);
 applicationRouter.get("/get-all-applications", getAllApplication);
 
 
-
-
 module.exports = applicationRouter
