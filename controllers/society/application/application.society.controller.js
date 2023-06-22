@@ -55,7 +55,7 @@ module.exports.updateApplication = async (req, res) => {
         console.log(files)
         const { application_type, application_title, application_desc } = req.body;
 
-        const app_data = await Application.findOne({ _id: app_id });
+        const app_data = await Application.findOne({ _id: app_id }).populate("society_id");
         if (!app_data.is_approved) {
             const data = await Application.updateOne(
                 { _id: app_id },
@@ -98,7 +98,7 @@ module.exports.updateApplication = async (req, res) => {
 module.exports.getApplicationBySocietyId = async (req, res) => {
     try {
         const id = req.Society._id;
-        const data = await Application.find({ society_id: id })
+        const data = await Application.find({ society_id: id }).populate("society_id")
 
         res.status(200).json({
             success: true,
