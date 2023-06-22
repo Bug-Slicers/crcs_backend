@@ -6,7 +6,7 @@ const uploadcontroller = require('../../middlewares/upload_middlewares/uploadFil
 const { requireAdminAuth } = require("../../middlewares/admin.middleware");
 const adminRouter = Router();
 adminRouter.get("/test", test)
-adminRouter.get("/get-unapproved-applications", getApplicationForApproval);
+adminRouter.get("/get-unapproved-applications", requireAdminAuth, getApplicationForApproval);
 adminRouter.get("/get-application/:id", requireAdminAuth, getApplicationById)
 
 adminRouter.post("/signin", requireAdminAuth, admin_signup)

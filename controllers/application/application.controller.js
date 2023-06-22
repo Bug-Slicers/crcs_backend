@@ -50,7 +50,7 @@ module.exports.getAllApplication = async (req, res) => {
 module.exports.getApplicationById = async (req, res) => {
     try {
         const app_id = req.params.id;
-        const data = await Application.findOne({ _id: app_id });
+        const data = await Application.findOne({ _id: app_id }).populate("society_id");
         res.status(200).json({
             msg: "Application data sent successfully",
             success: true,

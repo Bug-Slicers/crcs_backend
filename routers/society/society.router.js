@@ -12,11 +12,11 @@ societyRouter.get("/test", test)
 societyRouter.get("/registered-societies", getRegisteredSocieties);
 societyRouter.get("/get-application/:id", requireSocietyAuth, getApplicationById)
 societyRouter.get("/get-profile", requireSocietyAuth, getProfile)
-societyRouter.get("/get-your-applications", getApplicationBySocietyId)
+societyRouter.get("/get-your-applications", requireSocietyAuth, getApplicationBySocietyId)
 societyRouter.get("/generate-otp", requireSocietyAuth, generateOtp);
 
 societyRouter.post("/create-application", requireSocietyAuth, uploadSupportingDocuments, createApplication);
-societyRouter.post("/update-application/:id", updateSupportingDocs, updateApplication)
+societyRouter.post("/update-application/:id", updateSupportingDocs, requireSocietyAuth, updateApplication)
 societyRouter.post("/signup", uploadLogoController.uploadLogo, society_signup);
 societyRouter.post("/login", society_login)
 societyRouter.post("/check-otp", requireSocietyAuth, checkOtp);
